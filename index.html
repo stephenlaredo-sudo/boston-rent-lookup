@@ -737,17 +737,6 @@
       }
     });
 
-    if (
-  location.hostname &&
-  location.hostname !== "localhost" &&
-  location.hostname !== "127.0.0.1" &&
-  location.hostname !== "realestatewithlaredo.com" &&
-  location.hostname !== "www.realestatewithlaredo.com" &&
-  location.hostname !== "stephenlaredo.sudo.github.io"
-) {
-  document.body.innerHTML = "";
-}
-
     function setStatus(message = "", kind = "helper") {
       els.statusText.hidden = true;
       els.errorText.hidden = true;
