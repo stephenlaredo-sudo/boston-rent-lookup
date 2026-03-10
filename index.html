@@ -2,9 +2,10 @@
 <html lang="en">
 <head>
   <!--
-    Boston Rental Value Lookup
+    Greater Boston Rental Value Lookup
     Created by Stephen Laredo
     © 2026 RealEstateWithLaredo.com
+    UID: sl-rentlookup-20260309-v1
     Unauthorized reuse prohibited.
   -->
   <meta charset="utf-8" />
@@ -17,6 +18,7 @@
   <meta name="author" content="Stephen Laredo" />
   <meta name="copyright" content="Stephen Laredo Real Estate" />
   <meta name="generator" content="RealEstateWithLaredo Rental Market Tool" />
+  <meta name="tool-uid" content="sl-rentlookup-20260309-v1" />
 
   <script type="application/ld+json">
   {
@@ -93,6 +95,8 @@
       background: var(--bg-canvas);
       color: var(--ink);
       font-family: var(--font-body);
+      user-select: none;
+      -webkit-user-select: none;
     }
 
     body { min-height: 100vh; }
@@ -635,7 +639,7 @@
   </style>
 </head>
 <body>
-  <main class="tool-shell">
+  <main class="tool-shell" data-tool-uid="sl-rentlookup-20260309-v1">
     <section class="tool-head" aria-labelledby="rent-tool-title">
       <h1 id="rent-tool-title" class="tool-title">Greater Boston Rental Value Lookup</h1>
       <p class="tool-sub">Search a town or neighborhood and bedroom count to view rental data.</p>
@@ -950,7 +954,7 @@
 
     function renderBedMenu() {
       const buttons = els.bedMenu.querySelectorAll(".option-btn");
-      buttons.forEach(btn => {
+      buttons.forEach((btn) => {
         btn.classList.toggle("is-selected", btn.dataset.bedroom === state.selectedBedroom);
       });
     }
@@ -1218,7 +1222,7 @@
         const missing = requiredHeaders.filter(req => !headers.includes(req));
         if (missing.length) throw new Error(`Missing expected column(s): ${missing.join(", ")}`);
 
-        const dataRows = csvRows.slice(1).map(row => {
+        const dataRows = csvRows.slice(1).map((row) => {
           const obj = {};
           headers.forEach((header, index) => {
             obj[header] = row[index] ?? "";
