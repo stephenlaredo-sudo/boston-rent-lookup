@@ -85,6 +85,7 @@
       --max-wrap: 720px;
       --town-menu-max: 260px;
       --bed-menu-max: 240px;
+      --frame-min-height: 720px;
     }
 
     * { box-sizing: border-box; }
@@ -104,7 +105,20 @@
     .tool-shell {
       width: min(100% - 18px, var(--max-wrap));
       margin: 0 auto;
-      padding: 10px 0 14px;
+      padding: 0;
+    }
+
+    .tool-frame {
+      min-height: var(--frame-min-height);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 18px 0 14px;
+    }
+
+    .tool-center {
+      width: 100%;
+      transform: translateY(-10px);
     }
 
     .tool-head {
@@ -608,9 +622,21 @@
     }
 
     @media (max-width: 720px) {
+      :root{
+        --frame-min-height: 680px;
+      }
+
       .tool-shell {
         width: min(100% - 16px, var(--max-wrap));
-        padding: 8px 0 12px;
+      }
+
+      .tool-frame {
+        padding: 12px 0 10px;
+        align-items: flex-start;
+      }
+
+      .tool-center {
+        transform: none;
       }
 
       .field-grid {
@@ -640,65 +666,69 @@
 </head>
 <body>
   <main class="tool-shell" data-tool-uid="sl-rentlookup-20260309-v1">
-    <section class="tool-head" aria-labelledby="rent-tool-title">
-      <h1 id="rent-tool-title" class="tool-title">Greater Boston Rental Value Lookup</h1>
-      <p class="tool-sub">Search a town or neighborhood and bedroom count to view rental data.</p>
-    </section>
+    <div class="tool-frame">
+      <div class="tool-center">
+        <section class="tool-head" aria-labelledby="rent-tool-title">
+          <h1 id="rent-tool-title" class="tool-title">Greater Boston Rental Value Lookup</h1>
+          <p class="tool-sub">Search a town or neighborhood and bedroom count to view rental data.</p>
+        </section>
 
-    <section class="card lookup-card" aria-label="Rental lookup form">
-      <div class="field-grid">
-        <div class="field town-field">
-          <label class="label" for="townInput">Town or Neighborhood</label>
-          <input
-            id="townInput"
-            class="typeahead__input"
-            type="text"
-            placeholder="Search town or neighborhood"
-            autocomplete="off"
-            aria-autocomplete="list"
-            aria-expanded="false"
-            aria-controls="townMenu"
-          />
-          <button id="clearTown" class="clear-btn" type="button" aria-label="Clear town search">×</button>
-          <button id="townToggle" class="typeahead__btn" type="button" aria-label="Show town list">▾</button>
-          <div id="townMenu" class="town-menu" role="listbox" aria-label="Town or neighborhood options"></div>
-        </div>
+        <section class="card lookup-card" aria-label="Rental lookup form">
+          <div class="field-grid">
+            <div class="field town-field">
+              <label class="label" for="townInput">Town or Neighborhood</label>
+              <input
+                id="townInput"
+                class="typeahead__input"
+                type="text"
+                placeholder="Search town or neighborhood"
+                autocomplete="off"
+                aria-autocomplete="list"
+                aria-expanded="false"
+                aria-controls="townMenu"
+              />
+              <button id="clearTown" class="clear-btn" type="button" aria-label="Clear town search">×</button>
+              <button id="townToggle" class="typeahead__btn" type="button" aria-label="Show town list">▾</button>
+              <div id="townMenu" class="town-menu" role="listbox" aria-label="Town or neighborhood options"></div>
+            </div>
 
-        <div class="field bed-field">
-          <label class="label" for="bedroomTrigger">Bedrooms</label>
-          <button
-            id="bedroomTrigger"
-            class="picker-trigger is-placeholder"
-            type="button"
-            aria-expanded="false"
-            aria-controls="bedMenu">
-            Select
-          </button>
-          <div id="bedMenu" class="bed-menu" role="listbox" aria-label="Bedroom options">
-            <button type="button" class="option-btn" data-bedroom="1" role="option">1</button>
-            <button type="button" class="option-btn" data-bedroom="2" role="option">2</button>
-            <button type="button" class="option-btn" data-bedroom="3" role="option">3</button>
-            <button type="button" class="option-btn" data-bedroom="4" role="option">4</button>
+            <div class="field bed-field">
+              <label class="label" for="bedroomTrigger">Bedrooms</label>
+              <button
+                id="bedroomTrigger"
+                class="picker-trigger is-placeholder"
+                type="button"
+                aria-expanded="false"
+                aria-controls="bedMenu">
+                Select
+              </button>
+              <div id="bedMenu" class="bed-menu" role="listbox" aria-label="Bedroom options">
+                <button type="button" class="option-btn" data-bedroom="1" role="option">1</button>
+                <button type="button" class="option-btn" data-bedroom="2" role="option">2</button>
+                <button type="button" class="option-btn" data-bedroom="3" role="option">3</button>
+                <button type="button" class="option-btn" data-bedroom="4" role="option">4</button>
+              </div>
+            </div>
+
+            <div class="field">
+              <label class="label" aria-hidden="true">&nbsp;</label>
+              <button id="lookupBtn" class="btn" type="button" disabled>See Rental Data</button>
+            </div>
           </div>
-        </div>
 
-        <div class="field">
-          <label class="label" aria-hidden="true">&nbsp;</label>
-          <button id="lookupBtn" class="btn" type="button" disabled>See Rental Data</button>
-        </div>
+          <div class="helper-row" aria-live="polite">
+            <p id="statusText" class="helper-text" hidden></p>
+            <p id="errorText" class="error-text" hidden></p>
+            <p class="note-text">Choose from the live list of available towns and neighborhoods in the dataset.</p>
+          </div>
+        </section>
+
+        <section id="resultsWrap" class="results-wrap" aria-live="polite"></section>
+
+        <div class="tool-credit">Rental data tool © 2026 Stephen Laredo · RealEstateWithLaredo.com</div>
+        <div class="data-source">Rental data sourced from MLS Pinergy listing history and analyzed by RealEstateWithLaredo.</div>
       </div>
-
-      <div class="helper-row" aria-live="polite">
-        <p id="statusText" class="helper-text" hidden></p>
-        <p id="errorText" class="error-text" hidden></p>
-        <p class="note-text">Choose from the live list of available towns and neighborhoods in the dataset.</p>
-      </div>
-    </section>
-
-    <section id="resultsWrap" class="results-wrap" aria-live="polite"></section>
-
-    <div class="tool-credit">Rental data tool © 2026 Stephen Laredo · RealEstateWithLaredo.com</div>
-    <div class="data-source">Rental data sourced from MLS Pinergy listing history and analyzed by RealEstateWithLaredo.</div>
+    </div>
   </main>
 
   <script>
