@@ -1,0 +1,1344 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <!--
+    Boston Rental Value Lookup
+    Created by Stephen Laredo
+    © 2026 RealEstateWithLaredo.com
+    Unauthorized reuse prohibited.
+  -->
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Greater Boston Rental Value Lookup</title>
+  <meta
+    name="description"
+    content="Search a town or neighborhood and bedroom count to view rental data across Greater Boston."
+  />
+  <meta name="author" content="Stephen Laredo" />
+  <meta name="copyright" content="Stephen Laredo Real Estate" />
+  <meta name="generator" content="RealEstateWithLaredo Rental Market Tool" />
+
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "WebApplication",
+    "name": "Greater Boston Rental Value Lookup",
+    "creator": {
+      "@type": "Person",
+      "name": "Stephen Laredo"
+    },
+    "publisher": {
+      "@type": "Organization",
+      "name": "RealEstateWithLaredo"
+    },
+    "sourceOrganization": {
+      "@type": "Organization",
+      "name": "MLS Property Information Network (MLS PIN)"
+    },
+    "url": "https://realestatewithlaredo.com/",
+    "applicationCategory": "Real Estate",
+    "operatingSystem": "Web Browser"
+  }
+  </script>
+
+  <style>
+    :root{
+      --font-body: Verdana, Geneva, Tahoma, sans-serif;
+      --font-ui: "Lucida Sans", "Lucida Sans Unicode", "Lucida Grande", Verdana, Geneva, sans-serif;
+
+      --bg-canvas: #F5F7FA;
+      --bg-card: #ffffff;
+      --ink: #262626;
+      --ink-strong: #000000;
+      --ink-muted: #4b5563;
+      --ink-muted-2: #6b7280;
+
+      --border: rgba(38,38,38,.10);
+      --border-strong: rgba(38,38,38,.16);
+
+      --cta: #2F6F73;
+      --cta-hover: #285F62;
+      --cta-pressed: #204E51;
+      --cta-disabled: #9aa8a9;
+
+      --shadow-soft: 0 8px 22px rgba(17,24,39,.10);
+      --radius: 16px;
+      --radius-pill: 999px;
+
+      --trend-up-bg: rgba(46,125,50,.10);
+      --trend-up-text: #2E7D32;
+      --trend-down-bg: rgba(183,74,74,.10);
+      --trend-down-text: #B74A4A;
+      --trend-neutral-bg: rgba(107,114,128,.12);
+      --trend-neutral-text: #6b7280;
+
+      --conf-strong-bg: rgba(46,125,50,.10);
+      --conf-strong-text: #2E7D32;
+      --conf-medium-bg: rgba(164,110,29,.12);
+      --conf-medium-text: #8A5A12;
+      --conf-low-bg: rgba(183,74,74,.10);
+      --conf-low-text: #B74A4A;
+
+      --focus: 0 0 0 4px rgba(47,111,115,.24);
+      --max-wrap: 720px;
+      --town-menu-max: 260px;
+      --bed-menu-max: 240px;
+    }
+
+    * { box-sizing: border-box; }
+
+    html, body {
+      margin: 0;
+      padding: 0;
+      background: var(--bg-canvas);
+      color: var(--ink);
+      font-family: var(--font-body);
+    }
+
+    body { min-height: 100vh; }
+
+    .tool-shell {
+      width: min(100% - 18px, var(--max-wrap));
+      margin: 0 auto;
+      padding: 10px 0 14px;
+    }
+
+    .tool-head {
+      margin-bottom: 8px;
+    }
+
+    .tool-title {
+      margin: 0 0 3px;
+      font-family: var(--font-body);
+      font-size: clamp(18px, 1.7vw, 22px);
+      line-height: 1.15;
+      font-weight: 900;
+      letter-spacing: -.02em;
+      color: var(--ink-strong);
+    }
+
+    .tool-sub {
+      margin: 0;
+      font-size: 13.5px;
+      line-height: 1.4;
+      color: rgba(38,38,38,.78);
+    }
+
+    .card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow-soft);
+    }
+
+    .lookup-card,
+    .result-card,
+    .empty-card {
+      padding: 12px;
+    }
+
+    .field-grid {
+      display: grid;
+      gap: 8px;
+      align-items: end;
+      grid-template-columns: minmax(0,1fr) 126px 142px;
+    }
+
+    .field {
+      display: flex;
+      flex-direction: column;
+      gap: 5px;
+      min-width: 0;
+      position: relative;
+    }
+
+    .label {
+      margin: 0;
+      font-family: var(--font-ui);
+      font-size: 11px;
+      line-height: 1;
+      font-weight: 900;
+      letter-spacing: .12em;
+      text-transform: uppercase;
+      color: rgba(38,38,38,.8);
+    }
+
+    .btn,
+    .typeahead__btn,
+    .clear-btn,
+    .picker-trigger {
+      min-height: 42px;
+      border-radius: 12px;
+      border: 1px solid var(--border-strong);
+      font-size: 14px;
+      line-height: 1.2;
+    }
+
+    .typeahead__input {
+      width: 100%;
+      min-height: 42px;
+      padding: 0 72px 0 13px;
+      background: #fff;
+      color: var(--ink);
+      outline: none;
+      font-family: var(--font-body);
+      border-radius: 12px;
+      border: 1px solid var(--border-strong);
+    }
+
+    .typeahead__input::placeholder { color: var(--ink-muted-2); }
+
+    .typeahead__btn {
+      position: absolute;
+      right: 5px;
+      bottom: 0;
+      width: 34px;
+      min-height: 32px;
+      border: 0;
+      background: transparent;
+      color: #596273;
+      cursor: pointer;
+      font-size: 18px;
+      font-weight: 700;
+    }
+
+    .clear-btn {
+      position: absolute;
+      right: 34px;
+      bottom: 0;
+      width: 30px;
+      min-height: 32px;
+      border: 0;
+      background: transparent;
+      color: #7a8796;
+      cursor: pointer;
+      font-size: 18px;
+      font-weight: 700;
+      display: none;
+    }
+
+    .clear-btn.is-visible {
+      display: block;
+    }
+
+    .picker-trigger {
+      width: 100%;
+      padding: 0 34px 0 13px;
+      background: #fff;
+      color: var(--ink);
+      font-family: var(--font-body);
+      font-size: 15px;
+      font-weight: 700;
+      text-align: left;
+      cursor: pointer;
+      position: relative;
+    }
+
+    .picker-trigger::after {
+      content: "";
+      position: absolute;
+      right: 14px;
+      top: 50%;
+      width: 0;
+      height: 0;
+      border-left: 5px solid transparent;
+      border-right: 5px solid transparent;
+      border-top: 6px solid #596273;
+      transform: translateY(-30%);
+    }
+
+    .picker-trigger.is-placeholder {
+      color: var(--ink-muted-2);
+      font-weight: 700;
+    }
+
+    .typeahead__input:focus-visible,
+    .typeahead__btn:focus-visible,
+    .clear-btn:focus-visible,
+    .picker-trigger:focus-visible,
+    .option-btn:focus-visible,
+    .btn:focus-visible,
+    .cta-link:focus-visible {
+      outline: none;
+      box-shadow: var(--focus);
+    }
+
+    .town-menu,
+    .bed-menu {
+      position: absolute;
+      top: calc(100% + 6px);
+      left: 0;
+      right: 0;
+      z-index: 20;
+      background: #fff;
+      border: 1px solid var(--border-strong);
+      border-radius: 14px;
+      box-shadow: var(--shadow-soft);
+      overflow-y: auto;
+      display: none;
+      padding: 6px;
+    }
+
+    .town-menu {
+      max-height: var(--town-menu-max);
+    }
+
+    .bed-menu {
+      max-height: var(--bed-menu-max);
+    }
+
+    .town-menu.is-open,
+    .bed-menu.is-open {
+      display: block;
+    }
+
+    .option-btn {
+      width: 100%;
+      min-height: 44px;
+      text-align: left;
+      border: 0;
+      background: transparent;
+      border-radius: 10px;
+      padding: 10px;
+      font-family: var(--font-body);
+      font-size: 14px;
+      line-height: 1.3;
+      color: var(--ink);
+      cursor: pointer;
+    }
+
+    .option-btn:hover,
+    .option-btn.is-active {
+      background: rgba(47,111,115,.08);
+    }
+
+    .option-btn mark {
+      background: rgba(47,111,115,.14);
+      color: inherit;
+      padding: 0 1px;
+      border-radius: 3px;
+    }
+
+    .option-btn.is-selected {
+      font-weight: 900;
+    }
+
+    .town-empty {
+      padding: 10px;
+      font-size: 13px;
+      line-height: 1.4;
+      color: var(--ink-muted);
+    }
+
+    .helper-row {
+      margin-top: 7px;
+      min-height: 16px;
+    }
+
+    .helper-text,
+    .error-text,
+    .loading-text,
+    .note-text {
+      margin: 0;
+      font-size: 12px;
+      line-height: 1.35;
+    }
+
+    .helper-text,
+    .loading-text,
+    .note-text { color: var(--ink-muted); }
+
+    .error-text {
+      color: #9F2D2D;
+      font-weight: 700;
+    }
+
+    .results-wrap {
+      margin-top: 6px;
+      display: none;
+    }
+
+    .results-wrap.is-visible { display: block; }
+
+    .eyebrow {
+      margin: 0 0 5px;
+      font-family: var(--font-ui);
+      font-size: 10.5px;
+      line-height: 1;
+      font-weight: 900;
+      letter-spacing: .14em;
+      text-transform: uppercase;
+      color: var(--ink-muted);
+    }
+
+    .result-top {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 10px;
+      margin-bottom: 8px;
+      padding-bottom: 8px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .result-location {
+      margin: 0;
+      font-size: 15px;
+      line-height: 1.3;
+      color: var(--ink-strong);
+      font-weight: 900;
+    }
+
+    .result-date-inline {
+      margin: 0;
+      font-size: 12px;
+      line-height: 1.25;
+      color: var(--ink-muted);
+      text-align: right;
+      white-space: nowrap;
+      font-weight: 700;
+    }
+
+    .primary-row {
+      margin-bottom: 10px;
+    }
+
+    .primary-label {
+      margin: 0 0 3px;
+      font-family: var(--font-ui);
+      font-size: 10.5px;
+      line-height: 1;
+      font-weight: 900;
+      letter-spacing: .14em;
+      text-transform: uppercase;
+      color: rgba(38,38,38,.82);
+    }
+
+    .primary-value {
+      margin: 0;
+      font-size: clamp(32px, 4.5vw, 38px);
+      line-height: 1.03;
+      font-weight: 900;
+      letter-spacing: -.03em;
+      color: var(--ink-strong);
+    }
+
+    .primary-suffix {
+      font-size: .38em;
+      letter-spacing: 0;
+      color: var(--ink-muted);
+      font-weight: 700;
+      margin-left: 4px;
+    }
+
+    .metrics-compact {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 9px;
+    }
+
+    .metric {
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 11px;
+      background: #fff;
+      min-width: 0;
+    }
+
+    .metric-label {
+      margin: 0 0 5px;
+      font-family: var(--font-ui);
+      font-size: 10.5px;
+      line-height: 1;
+      font-weight: 900;
+      letter-spacing: .12em;
+      text-transform: uppercase;
+      color: rgba(38,38,38,.82);
+    }
+
+    .metric-value {
+      margin: 0;
+      font-size: 15px;
+      line-height: 1.25;
+      font-weight: 900;
+      color: var(--ink-strong);
+    }
+
+    .metric-note {
+      margin: 5px 0 0;
+      font-size: 12px;
+      line-height: 1.35;
+      color: var(--ink-muted);
+    }
+
+    .pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 6px 9px;
+      border-radius: var(--radius-pill);
+      font-family: var(--font-ui);
+      font-size: 11.5px;
+      line-height: 1;
+      font-weight: 900;
+      letter-spacing: .01em;
+    }
+
+    .trend-up { background: var(--trend-up-bg); color: var(--trend-up-text); }
+    .trend-down { background: var(--trend-down-bg); color: var(--trend-down-text); }
+    .trend-neutral { background: var(--trend-neutral-bg); color: var(--trend-neutral-text); }
+
+    .conf-strong { background: var(--conf-strong-bg); color: var(--conf-strong-text); }
+    .conf-medium { background: var(--conf-medium-bg); color: var(--conf-medium-text); }
+    .conf-low { background: var(--conf-low-bg); color: var(--conf-low-text); }
+
+    .meta-row {
+      margin-top: 8px;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      align-items: center;
+    }
+
+    .mini-meta {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      border: 1px solid var(--border);
+      border-radius: var(--radius-pill);
+      padding: 6px 9px;
+      font-size: 11.5px;
+      line-height: 1.2;
+      color: var(--ink-muted);
+      background: rgba(245,247,250,.7);
+    }
+
+    .mini-meta strong { color: var(--ink); }
+
+    .result-disclaimer {
+      margin: 8px 0 0;
+      padding-top: 8px;
+      border-top: 1px solid var(--border);
+      font-size: 11.5px;
+      line-height: 1.4;
+      color: #6b7280;
+    }
+
+    .cta-wrap {
+      margin-top: 8px;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      align-items: flex-start;
+    }
+
+    .btn,
+    .cta-link {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      padding: 0 16px;
+      border-radius: var(--radius-pill);
+      background: var(--cta);
+      color: #fff;
+      text-decoration: none;
+      font-family: var(--font-ui);
+      font-size: 14px;
+      line-height: 1;
+      font-weight: 900;
+      cursor: pointer;
+      border: 1px solid transparent;
+      transition: background-color .18s ease, transform .12s ease;
+      white-space: nowrap;
+      min-height: 42px;
+    }
+
+    .btn:hover,
+    .cta-link:hover {
+      background: var(--cta-hover);
+      transform: translateY(-1px);
+    }
+
+    .btn:active,
+    .cta-link:active {
+      background: var(--cta-pressed);
+      transform: translateY(0);
+    }
+
+    .btn[disabled] {
+      background: var(--cta-disabled);
+      cursor: not-allowed;
+      transform: none;
+    }
+
+    .trust-note {
+      margin: 0;
+      font-size: 11.75px;
+      line-height: 1.4;
+      color: var(--ink-muted);
+    }
+
+    .tool-credit,
+    .data-source {
+      margin-top: 6px;
+      font-size: 11px;
+      line-height: 1.35;
+      color: #6b7280;
+      text-align: center;
+    }
+
+    .empty-title {
+      margin: 0 0 6px;
+      font-size: 16px;
+      line-height: 1.25;
+      font-weight: 900;
+      color: var(--ink-strong);
+      letter-spacing: -.01em;
+    }
+
+    .empty-copy {
+      margin: 0;
+      font-size: 13.5px;
+      line-height: 1.45;
+      color: var(--ink-muted);
+    }
+
+    @media (max-width: 720px) {
+      .tool-shell {
+        width: min(100% - 16px, var(--max-wrap));
+        padding: 8px 0 12px;
+      }
+
+      .field-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .result-top {
+        display: block;
+      }
+
+      .result-date-inline {
+        text-align: left;
+        margin-top: 4px;
+        white-space: normal;
+      }
+
+      .metrics-compact {
+        grid-template-columns: 1fr;
+      }
+
+      .btn,
+      .cta-link {
+        width: 100%;
+      }
+    }
+  </style>
+</head>
+<body>
+  <main class="tool-shell">
+    <section class="tool-head" aria-labelledby="rent-tool-title">
+      <h1 id="rent-tool-title" class="tool-title">Greater Boston Rental Value Lookup</h1>
+      <p class="tool-sub">Search a town or neighborhood and bedroom count to view rental data.</p>
+    </section>
+
+    <section class="card lookup-card" aria-label="Rental lookup form">
+      <div class="field-grid">
+        <div class="field town-field">
+          <label class="label" for="townInput">Town or Neighborhood</label>
+          <input
+            id="townInput"
+            class="typeahead__input"
+            type="text"
+            placeholder="Search town or neighborhood"
+            autocomplete="off"
+            aria-autocomplete="list"
+            aria-expanded="false"
+            aria-controls="townMenu"
+          />
+          <button id="clearTown" class="clear-btn" type="button" aria-label="Clear town search">×</button>
+          <button id="townToggle" class="typeahead__btn" type="button" aria-label="Show town list">▾</button>
+          <div id="townMenu" class="town-menu" role="listbox" aria-label="Town or neighborhood options"></div>
+        </div>
+
+        <div class="field bed-field">
+          <label class="label" for="bedroomTrigger">Bedrooms</label>
+          <button
+            id="bedroomTrigger"
+            class="picker-trigger is-placeholder"
+            type="button"
+            aria-expanded="false"
+            aria-controls="bedMenu">
+            Select
+          </button>
+          <div id="bedMenu" class="bed-menu" role="listbox" aria-label="Bedroom options">
+            <button type="button" class="option-btn" data-bedroom="1" role="option">1</button>
+            <button type="button" class="option-btn" data-bedroom="2" role="option">2</button>
+            <button type="button" class="option-btn" data-bedroom="3" role="option">3</button>
+            <button type="button" class="option-btn" data-bedroom="4" role="option">4</button>
+          </div>
+        </div>
+
+        <div class="field">
+          <label class="label" aria-hidden="true">&nbsp;</label>
+          <button id="lookupBtn" class="btn" type="button" disabled>See Rental Data</button>
+        </div>
+      </div>
+
+      <div class="helper-row" aria-live="polite">
+        <p id="statusText" class="helper-text" hidden></p>
+        <p id="errorText" class="error-text" hidden></p>
+        <p class="note-text">Choose from the live list of available towns and neighborhoods in the dataset.</p>
+      </div>
+    </section>
+
+    <section id="resultsWrap" class="results-wrap" aria-live="polite"></section>
+
+    <div class="tool-credit">Rental data tool © 2026 Stephen Laredo · RealEstateWithLaredo.com</div>
+    <div class="data-source">Rental data sourced from MLS Pinergy listing history and analyzed by RealEstateWithLaredo.</div>
+  </main>
+
+  <script>
+    const SHEET_CSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vS4nWIHl3MrDTjI71oibrouWEv0TkpUnO32FiaXWLAhZ_Es6MQ4Ka6o5rcV8gcD_8sy0XDqwGVzWGTO/pub?gid=348627651&single=true&output=csv";
+    const CTA_URL = "https://form.jotform.com/260054743366154";
+
+    const state = {
+      rows: [],
+      townOptions: [],
+      filteredOptions: [],
+      highlightedTownIndex: -1,
+      menuOpen: false,
+      selectedTown: "",
+      bedroomMenuOpen: false,
+      selectedBedroom: ""
+    };
+
+    const els = {
+      townInput: document.getElementById("townInput"),
+      townToggle: document.getElementById("townToggle"),
+      clearTown: document.getElementById("clearTown"),
+      townMenu: document.getElementById("townMenu"),
+      bedroomTrigger: document.getElementById("bedroomTrigger"),
+      bedMenu: document.getElementById("bedMenu"),
+      lookupBtn: document.getElementById("lookupBtn"),
+      resultsWrap: document.getElementById("resultsWrap"),
+      statusText: document.getElementById("statusText"),
+      errorText: document.getElementById("errorText")
+    };
+
+    document.addEventListener("contextmenu", (event) => event.preventDefault());
+
+    document.addEventListener("keydown", (event) => {
+      if (event.key === "F12") {
+        event.preventDefault();
+      }
+    });
+
+    if (
+      location.hostname &&
+      location.hostname !== "localhost" &&
+      location.hostname !== "127.0.0.1" &&
+      location.hostname !== "realestatewithlaredo.com" &&
+      location.hostname !== "www.realestatewithlaredo.com"
+    ) {
+      document.body.innerHTML = "";
+    }
+
+    function setStatus(message = "", kind = "helper") {
+      els.statusText.hidden = true;
+      els.errorText.hidden = true;
+      if (!message) return;
+
+      if (kind === "error") {
+        els.errorText.textContent = message;
+        els.errorText.hidden = false;
+      } else {
+        els.statusText.textContent = message;
+        els.statusText.className = kind === "loading" ? "loading-text" : "helper-text";
+        els.statusText.hidden = false;
+      }
+    }
+
+    function updateButtonState() {
+      els.lookupBtn.disabled = !(state.selectedTown && state.selectedBedroom);
+    }
+
+    function updateClearButton() {
+      els.clearTown.classList.toggle("is-visible", !!els.townInput.value.trim());
+    }
+
+    function updateBedroomTrigger() {
+      if (state.selectedBedroom) {
+        els.bedroomTrigger.textContent = state.selectedBedroom;
+        els.bedroomTrigger.classList.remove("is-placeholder");
+      } else {
+        els.bedroomTrigger.textContent = "Select";
+        els.bedroomTrigger.classList.add("is-placeholder");
+      }
+    }
+
+    function escapeHtml(value) {
+      return String(value ?? "")
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#039;");
+    }
+
+    function escapeRegExp(string) {
+      return String(string).replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+    }
+
+    function highlightMatch(text, query) {
+      if (!query) return escapeHtml(text);
+      const safeQuery = escapeRegExp(query);
+      const regex = new RegExp(`(${safeQuery})`, "ig");
+      return escapeHtml(text).replace(regex, "<mark>$1</mark>");
+    }
+
+    function parseCsv(text) {
+      const rows = [];
+      let current = "";
+      let row = [];
+      let inQuotes = false;
+
+      for (let i = 0; i < text.length; i++) {
+        const char = text[i];
+        const next = text[i + 1];
+
+        if (char === '"') {
+          if (inQuotes && next === '"') {
+            current += '"';
+            i++;
+          } else {
+            inQuotes = !inQuotes;
+          }
+        } else if (char === "," && !inQuotes) {
+          row.push(current);
+          current = "";
+        } else if ((char === "\n" || char === "\r") && !inQuotes) {
+          if (char === "\r" && next === "\n") i++;
+          row.push(current);
+          const isEmptyRow = row.every(cell => String(cell).trim() === "");
+          if (!isEmptyRow) rows.push(row);
+          row = [];
+          current = "";
+        } else {
+          current += char;
+        }
+      }
+
+      if (current.length > 0 || row.length > 0) {
+        row.push(current);
+        const isEmptyRow = row.every(cell => String(cell).trim() === "");
+        if (!isEmptyRow) rows.push(row);
+      }
+
+      return rows;
+    }
+
+    function normalizeHeader(header) {
+      return String(header || "").trim().toLowerCase();
+    }
+
+    function parseCurrency(value) {
+      if (value == null) return null;
+      const cleaned = String(value).replace(/[^0-9.-]/g, "");
+      if (!cleaned) return null;
+      const num = Number(cleaned);
+      return Number.isFinite(num) ? num : null;
+    }
+
+    function parseNumber(value) {
+      if (value == null) return null;
+      const cleaned = String(value).replace(/[^0-9.-]/g, "");
+      if (!cleaned) return null;
+      const num = Number(cleaned);
+      return Number.isFinite(num) ? num : null;
+    }
+
+    function formatCurrency(value) {
+      const num = Number(value);
+      if (!Number.isFinite(num)) return "—";
+      return new Intl.NumberFormat("en-US", {
+        style: "currency",
+        currency: "USD",
+        maximumFractionDigits: 0
+      }).format(num);
+    }
+
+    function formatSignedCurrency(value) {
+      const num = Number(value);
+      if (!Number.isFinite(num)) return "";
+      const abs = Math.abs(num);
+      const formatted = new Intl.NumberFormat("en-US", {
+        style: "currency",
+        currency: "USD",
+        maximumFractionDigits: 0
+      }).format(abs);
+      return num < 0 ? `-${formatted}` : formatted;
+    }
+
+    function formatPercent(value) {
+      const num = Number(value);
+      if (!Number.isFinite(num)) return "";
+      const abs = Math.abs(num);
+      return `${abs.toFixed(1)}%`;
+    }
+
+    function formatDataDate(value) {
+      if (!value) return "—";
+      const parsed = new Date(value);
+      if (!Number.isNaN(parsed.getTime())) {
+        return new Intl.DateTimeFormat("en-US", { month: "short", year: "numeric" }).format(parsed);
+      }
+      return String(value);
+    }
+
+    function buildTownOptions(rows) {
+      const unique = [...new Set(rows.map(row => row.Town).filter(Boolean))];
+      unique.sort((a, b) => a.localeCompare(b));
+      state.townOptions = unique;
+      state.filteredOptions = [...unique];
+      renderTownMenu(unique, "");
+    }
+
+    function openTownMenu() {
+      state.menuOpen = true;
+      els.townMenu.classList.add("is-open");
+      els.townInput.setAttribute("aria-expanded", "true");
+    }
+
+    function closeTownMenu() {
+      state.menuOpen = false;
+      state.highlightedTownIndex = -1;
+      els.townMenu.classList.remove("is-open");
+      els.townInput.setAttribute("aria-expanded", "false");
+    }
+
+    function openBedMenu() {
+      state.bedroomMenuOpen = true;
+      els.bedMenu.classList.add("is-open");
+      els.bedroomTrigger.setAttribute("aria-expanded", "true");
+    }
+
+    function closeBedMenu() {
+      state.bedroomMenuOpen = false;
+      els.bedMenu.classList.remove("is-open");
+      els.bedroomTrigger.setAttribute("aria-expanded", "false");
+    }
+
+    function renderTownMenu(options, query) {
+      state.filteredOptions = options;
+
+      if (!options.length) {
+        els.townMenu.innerHTML = '<div class="town-empty">No matching towns or neighborhoods found.</div>';
+        return;
+      }
+
+      els.townMenu.innerHTML = options.map((option, index) => `
+        <button
+          type="button"
+          class="option-btn ${index === state.highlightedTownIndex ? 'is-active' : ''}"
+          data-value="${escapeHtml(option)}"
+          role="option"
+          aria-selected="${index === state.highlightedTownIndex ? 'true' : 'false'}">
+          ${highlightMatch(option, query)}
+        </button>
+      `).join("");
+    }
+
+    function renderBedMenu() {
+      const buttons = els.bedMenu.querySelectorAll(".option-btn");
+      buttons.forEach(btn => {
+        btn.classList.toggle("is-selected", btn.dataset.bedroom === state.selectedBedroom);
+      });
+    }
+
+    function filterTownOptions(query) {
+      const q = String(query || "").trim().toLowerCase();
+      const filtered = !q
+        ? [...state.townOptions]
+        : state.townOptions.filter(option => option.toLowerCase().includes(q));
+
+      state.highlightedTownIndex = filtered.length ? 0 : -1;
+      renderTownMenu(filtered, query);
+      if (!state.menuOpen) openTownMenu();
+    }
+
+    function clearResults() {
+      els.resultsWrap.classList.remove("is-visible");
+      els.resultsWrap.innerHTML = "";
+    }
+
+    function selectTown(value) {
+      els.townInput.value = value;
+      state.selectedTown = value;
+      closeTownMenu();
+      updateButtonState();
+      updateClearButton();
+      setStatus("");
+    }
+
+    function clearTown() {
+      els.townInput.value = "";
+      state.selectedTown = "";
+      updateButtonState();
+      updateClearButton();
+      clearResults();
+      setStatus("");
+      filterTownOptions("");
+      els.townInput.focus();
+    }
+
+    function selectBedroom(value) {
+      state.selectedBedroom = value;
+      updateBedroomTrigger();
+      renderBedMenu();
+      closeBedMenu();
+      updateButtonState();
+      setStatus("");
+    }
+
+    function getConfidenceMeta(sampleStrength) {
+      const value = String(sampleStrength || "").trim().toLowerCase();
+
+      if (value === "strong") {
+        return {
+          className: "conf-strong",
+          label: "Strong",
+          note: "Broad listing activity supports this estimate."
+        };
+      }
+
+      if (value === "medium") {
+        return {
+          className: "conf-medium",
+          label: "Medium",
+          note: "Directionally useful, based on a smaller sample."
+        };
+      }
+
+      return {
+        className: "conf-low",
+        label: "Low",
+        note: "Limited data. Use as a starting point."
+      };
+    }
+
+    function getTrendMeta(trendDollar, trendPercent, trendSummary) {
+      const dollar = Number(trendDollar);
+      const percent = Number(trendPercent);
+
+      if (Number.isFinite(dollar) && dollar > 0) {
+        return {
+          className: "trend-up",
+          text: `▲ Up ${formatSignedCurrency(dollar)} (${formatPercent(percent)})`
+        };
+      }
+
+      if (Number.isFinite(dollar) && dollar < 0) {
+        return {
+          className: "trend-down",
+          text: `▼ Down ${formatSignedCurrency(dollar)} (${formatPercent(percent)})`
+        };
+      }
+
+      return {
+        className: "trend-neutral",
+        text: String(trendSummary || "Flat")
+      };
+    }
+
+    function shouldShowSampleSize(sampleStrength) {
+      const normalized = String(sampleStrength || "").trim().toLowerCase();
+      return normalized === "medium" || normalized === "low";
+    }
+
+    function renderNoResult(town, bedrooms) {
+      const context = [town, bedrooms ? `${bedrooms} Bedroom${bedrooms === "1" ? "" : "s"}` : ""]
+        .filter(Boolean)
+        .join(" · ");
+
+      els.resultsWrap.innerHTML = `
+        <div class="card empty-card">
+          <p class="eyebrow">Rental Data</p>
+          ${context ? `<p class="result-location">${escapeHtml(context)}</p>` : ""}
+          <h2 class="empty-title">That combination isn’t available in the current dataset.</h2>
+          <p class="empty-copy">For a more tailored estimate based on your property’s condition, updates, layout, and location, request a custom rent analysis.</p>
+        </div>
+        <div class="cta-wrap">
+          <a class="cta-link" href="${escapeHtml(CTA_URL)}" target="_blank" rel="noopener noreferrer">Request a Custom Rent Analysis</a>
+          <p class="trust-note">Free estimate • No obligation</p>
+        </div>
+      `;
+
+      els.resultsWrap.classList.add("is-visible");
+    }
+
+    function renderResult(row) {
+      const trend = getTrendMeta(row["Trend Dollar"], row["Trend Percent"], row["Trend Summary"]);
+      const confidence = getConfidenceMeta(row["Sample Strength"]);
+      const showSampleSize = shouldShowSampleSize(row["Sample Strength"]);
+      const rangeText = `${formatCurrency(row["Conservative Rent"])} — ${formatCurrency(row["High Rent"])}`;
+
+      els.resultsWrap.innerHTML = `
+        <div class="card result-card">
+          <p class="eyebrow">Market Rent Snapshot</p>
+          <div class="result-top">
+            <p class="result-location">${escapeHtml(row.Town)} · ${escapeHtml(String(row.Bedrooms))} Bedroom${String(row.Bedrooms) === "1" ? "" : "s"}</p>
+            <p class="result-date-inline">Data through ${escapeHtml(formatDataDate(row["Current Data Date"]))}</p>
+          </div>
+
+          <div class="primary-row">
+            <p class="primary-label">Median Rent</p>
+            <p class="primary-value">${escapeHtml(formatCurrency(row["Median Rent"]))}<span class="primary-suffix"> / month</span></p>
+          </div>
+
+          <div class="metrics-compact">
+            <div class="metric">
+              <p class="metric-label">Typical Range</p>
+              <p class="metric-value">${escapeHtml(rangeText)}</p>
+            </div>
+
+            <div class="metric">
+              <p class="metric-label">Trend</p>
+              <div class="pill ${escapeHtml(trend.className)}">${escapeHtml(trend.text)}</div>
+            </div>
+
+            <div class="metric">
+              <p class="metric-label">Estimate Confidence</p>
+              <div class="pill ${escapeHtml(confidence.className)}">${escapeHtml(confidence.label)}</div>
+              <p class="metric-note">${escapeHtml(confidence.note)}</p>
+            </div>
+
+            <div class="metric">
+              <p class="metric-label">Data</p>
+              <p class="metric-value">${escapeHtml(formatDataDate(row["Current Data Date"]))}</p>
+              <p class="metric-note">Based on the past 12 months.</p>
+            </div>
+          </div>
+
+          <div class="meta-row">
+            ${showSampleSize ? `<div class="mini-meta"><strong>Sample Size:</strong> ${escapeHtml(String(row["Sample Size"] ?? "—"))} listings</div>` : ""}
+          </div>
+
+          <p class="result-disclaimer">
+            Actual rental value varies based on condition, layout, parking, amenities, timing, and exact location.
+            <br><br>
+            Rental estimates are derived from historical listing data sourced from the MLS Pinergy system and analyzed by RealEstateWithLaredo. This tool is an independent analysis and is not affiliated with or endorsed by MLS PIN.
+          </p>
+        </div>
+
+        <div class="cta-wrap">
+          <a class="cta-link" href="${escapeHtml(CTA_URL)}" target="_blank" rel="noopener noreferrer">Get a Custom Rent Estimate</a>
+          <p class="trust-note">Free estimate • No obligation</p>
+        </div>
+      `;
+
+      els.resultsWrap.classList.add("is-visible");
+    }
+
+    function validateTown(value) {
+      return state.townOptions.includes(value);
+    }
+
+    function findMatch(town, bedrooms) {
+      return state.rows.find(row =>
+        String(row.Town).trim() === String(town).trim() &&
+        String(row.Bedrooms).trim() === String(bedrooms).trim()
+      );
+    }
+
+    function handleLookup() {
+      setStatus("");
+      const town = els.townInput.value.trim();
+      const bedrooms = state.selectedBedroom;
+
+      if (!town) {
+        setStatus("Please select a town or neighborhood.", "error");
+        clearResults();
+        return;
+      }
+
+      if (!validateTown(town)) {
+        setStatus("Please choose a town or neighborhood from the available list.", "error");
+        clearResults();
+        return;
+      }
+
+      if (!bedrooms) {
+        setStatus("Please select the number of bedrooms.", "error");
+        clearResults();
+        return;
+      }
+
+      const match = findMatch(town, bedrooms);
+
+      if (!match) {
+        renderNoResult(town, bedrooms);
+        return;
+      }
+
+      renderResult(match);
+    }
+
+    async function loadSheetData() {
+      if (!SHEET_CSV_URL || SHEET_CSV_URL.includes("PASTE_YOUR_PUBLISHED_CSV_URL_HERE")) {
+        setStatus("Add your published Google Sheet CSV URL in the code before launching the tool.", "error");
+        return;
+      }
+
+      try {
+        els.lookupBtn.disabled = true;
+        setStatus("Loading rental data…", "loading");
+
+        const response = await fetch(SHEET_CSV_URL, { cache: "no-store" });
+        if (!response.ok) throw new Error(`Request failed with status ${response.status}`);
+
+        const csvText = await response.text();
+        const csvRows = parseCsv(csvText);
+        if (!csvRows.length) throw new Error("No data was returned from the published sheet.");
+
+        const headers = csvRows[0].map(normalizeHeader);
+        const requiredHeaders = [
+          "town",
+          "bedrooms",
+          "median rent",
+          "trend summary",
+          "trend dollar",
+          "trend percent",
+          "conservative rent",
+          "high rent",
+          "sample strength",
+          "sample size",
+          "current data date"
+        ];
+
+        const missing = requiredHeaders.filter(req => !headers.includes(req));
+        if (missing.length) throw new Error(`Missing expected column(s): ${missing.join(", ")}`);
+
+        const dataRows = csvRows.slice(1).map(row => {
+          const obj = {};
+          headers.forEach((header, index) => {
+            obj[header] = row[index] ?? "";
+          });
+
+          return {
+            "Town": String(obj["town"] || "").trim(),
+            "Bedrooms": String(obj["bedrooms"] || "").trim(),
+            "Median Rent": parseCurrency(obj["median rent"]),
+            "Previous Rent": parseCurrency(obj["previous rent"]),
+            "Previous Rent Date": String(obj["previous rent date"] || "").trim(),
+            "Trend Summary": String(obj["trend summary"] || "").trim(),
+            "Trend Dollar": parseNumber(obj["trend dollar"]),
+            "Trend Percent": parseNumber(obj["trend percent"]),
+            "Conservative Rent": parseCurrency(obj["conservative rent"]),
+            "High Rent": parseCurrency(obj["high rent"]),
+            "Sample Strength": String(obj["sample strength"] || "").trim(),
+            "Sample Size": parseNumber(obj["sample size"]),
+            "Current Data Date": String(obj["current data date"] || "").trim()
+          };
+        }).filter(row => row.Town && row.Bedrooms);
+
+        state.rows = dataRows;
+        buildTownOptions(dataRows);
+        renderBedMenu();
+        updateButtonState();
+        setStatus(`Loaded ${state.townOptions.length} towns and neighborhoods from the live dataset.`);
+      } catch (error) {
+        console.error(error);
+        setStatus("The rental data could not be loaded right now. Please try again later.", "error");
+      } finally {
+        updateButtonState();
+      }
+    }
+
+    els.lookupBtn.addEventListener("click", handleLookup);
+
+    els.townInput.addEventListener("focus", () => {
+      filterTownOptions(els.townInput.value);
+      openTownMenu();
+    });
+
+    els.townInput.addEventListener("input", () => {
+      state.selectedTown = "";
+      updateButtonState();
+      updateClearButton();
+      filterTownOptions(els.townInput.value);
+      setStatus("");
+    });
+
+    els.townInput.addEventListener("keydown", (event) => {
+      if (!state.menuOpen && ["ArrowDown", "ArrowUp"].includes(event.key)) {
+        filterTownOptions(els.townInput.value);
+        openTownMenu();
+      }
+
+      if (event.key === "ArrowDown") {
+        event.preventDefault();
+        if (!state.filteredOptions.length) return;
+        state.highlightedTownIndex = Math.min(state.highlightedTownIndex + 1, state.filteredOptions.length - 1);
+        renderTownMenu(state.filteredOptions, els.townInput.value);
+      } else if (event.key === "ArrowUp") {
+        event.preventDefault();
+        if (!state.filteredOptions.length) return;
+        state.highlightedTownIndex = Math.max(state.highlightedTownIndex - 1, 0);
+        renderTownMenu(state.filteredOptions, els.townInput.value);
+      } else if (event.key === "Enter") {
+        if (state.menuOpen && state.highlightedTownIndex >= 0 && state.filteredOptions[state.highlightedTownIndex]) {
+          event.preventDefault();
+          selectTown(state.filteredOptions[state.highlightedTownIndex]);
+        } else {
+          event.preventDefault();
+          handleLookup();
+        }
+      } else if (event.key === "Escape") {
+        closeTownMenu();
+      }
+    });
+
+    els.townToggle.addEventListener("click", () => {
+      closeBedMenu();
+      if (state.menuOpen) {
+        closeTownMenu();
+      } else {
+        filterTownOptions(els.townInput.value);
+        openTownMenu();
+        els.townInput.focus();
+      }
+    });
+
+    els.clearTown.addEventListener("click", clearTown);
+
+    els.townMenu.addEventListener("click", (event) => {
+      const button = event.target.closest(".option-btn");
+      if (!button) return;
+      selectTown(button.dataset.value || "");
+    });
+
+    els.bedroomTrigger.addEventListener("click", () => {
+      closeTownMenu();
+      if (state.bedroomMenuOpen) {
+        closeBedMenu();
+      } else {
+        renderBedMenu();
+        openBedMenu();
+      }
+    });
+
+    els.bedMenu.addEventListener("click", (event) => {
+      const button = event.target.closest(".option-btn");
+      if (!button) return;
+      selectBedroom(button.dataset.bedroom || "");
+    });
+
+    document.addEventListener("click", (event) => {
+      if (!event.target.closest(".town-field")) closeTownMenu();
+      if (!event.target.closest(".bed-field")) closeBedMenu();
+    });
+
+    loadSheetData();
+  </script>
+</body>
+</html>
