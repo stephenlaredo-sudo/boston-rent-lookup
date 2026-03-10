@@ -6,7 +6,7 @@
     Compact iframe embed version
     Created by Stephen Laredo
     © 2026 RealEstateWithLaredo.com
-    UID: sl-rentlookup-embed-20260310-v1
+    UID: sl-rentlookup-embed-20260310-v2
   -->
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
@@ -65,7 +65,8 @@
 
     *{box-sizing:border-box}
 
-    html,body{
+    html,
+    body{
       margin:0;
       padding:0;
       background:transparent;
@@ -76,18 +77,18 @@
       text-rendering:optimizeLegibility;
     }
 
-    body{min-height:100vh}
+    body{min-height:auto}
 
     .tool-shell{
       width:min(100% - 8px, var(--max-wrap));
       margin:0 auto;
-      padding:6px 0;
+      padding:4px 0;
     }
 
     .tool-layout{
       display:grid;
       grid-template-columns:minmax(300px,1fr) minmax(300px,1fr);
-      gap:10px;
+      gap:8px;
       align-items:start;
     }
 
@@ -106,7 +107,7 @@
     .lookup-card,
     .result-card,
     .empty-card{
-      padding:14px;
+      padding:12px;
     }
 
     .field-stack{
@@ -137,7 +138,7 @@
     .typeahead__btn,
     .clear-btn,
     .picker-trigger{
-      min-height:42px;
+      min-height:40px;
       border-radius:14px;
       border:1px solid var(--border-strong);
       font-size:14px;
@@ -146,7 +147,7 @@
 
     .typeahead__input{
       width:100%;
-      min-height:42px;
+      min-height:40px;
       padding:0 74px 0 14px;
       background:#fff;
       color:var(--ink);
@@ -171,7 +172,7 @@
       right:6px;
       bottom:1px;
       width:34px;
-      min-height:32px;
+      min-height:30px;
       border:0;
       background:transparent;
       color:#596273;
@@ -185,7 +186,7 @@
       right:36px;
       bottom:1px;
       width:30px;
-      min-height:32px;
+      min-height:30px;
       border:0;
       background:transparent;
       color:#7a8796;
@@ -307,8 +308,8 @@
     }
 
     .helper-row{
-      margin-top:8px;
-      min-height:16px;
+      margin-top:6px;
+      min-height:14px;
     }
 
     .helper-text,
@@ -316,7 +317,7 @@
     .loading-text{
       margin:0;
       font-size:11.5px;
-      line-height:1.3;
+      line-height:1.28;
     }
 
     .helper-text,
@@ -329,7 +330,6 @@
 
     .results-wrap{
       display:block;
-      min-height:100%;
     }
 
     .eyebrow{
@@ -346,10 +346,10 @@
     .result-top{
       display:grid;
       grid-template-columns:minmax(0,1fr);
-      gap:6px;
+      gap:5px;
       align-items:start;
-      margin-bottom:10px;
-      padding-bottom:10px;
+      margin-bottom:8px;
+      padding-bottom:8px;
       border-bottom:1px solid var(--border);
     }
 
@@ -364,7 +364,7 @@
     .result-date-inline{
       margin:0;
       font-size:12px;
-      line-height:1.25;
+      line-height:1.22;
       color:var(--ink-muted);
       font-weight:700;
     }
@@ -373,14 +373,14 @@
       display:flex;
       flex-direction:column;
       align-items:flex-start;
-      gap:7px;
+      gap:6px;
       min-width:0;
     }
 
     .top-pills{
       display:flex;
       flex-wrap:wrap;
-      gap:7px;
+      gap:6px;
       justify-content:flex-start;
     }
 
@@ -415,14 +415,14 @@
     .metrics-compact{
       display:grid;
       grid-template-columns:repeat(2,minmax(0,1fr));
-      gap:8px;
-      margin-bottom:10px;
+      gap:7px;
+      margin-bottom:8px;
     }
 
     .metric{
       border:1px solid var(--border);
       border-radius:12px;
-      padding:10px;
+      padding:9px;
       background:#fff;
       min-width:0;
     }
@@ -441,7 +441,7 @@
     .metric-value{
       margin:0;
       font-size:13px;
-      line-height:1.26;
+      line-height:1.24;
       font-weight:900;
       color:var(--ink-strong);
     }
@@ -449,7 +449,7 @@
     .metric-note{
       margin:4px 0 0;
       font-size:11px;
-      line-height:1.28;
+      line-height:1.24;
       color:var(--ink-muted);
     }
 
@@ -476,30 +476,30 @@
 
     .result-disclaimer{
       margin:0;
-      padding-top:10px;
+      padding-top:8px;
       border-top:1px solid var(--border);
-      font-size:11px;
-      line-height:1.28;
+      font-size:10.5px;
+      line-height:1.24;
       color:#6b7280;
     }
 
     .cta-inline{
-      margin-top:10px;
+      margin-top:8px;
       display:grid;
-      gap:6px;
+      gap:5px;
     }
 
     .cta-copy{
       margin:0;
       font-size:11.5px;
-      line-height:1.28;
+      line-height:1.24;
       color:var(--ink-muted);
     }
 
     .trust-note{
       margin:0;
-      font-size:11px;
-      line-height:1.25;
+      font-size:10.75px;
+      line-height:1.22;
       color:var(--ink-muted);
     }
 
@@ -521,7 +521,7 @@
       border:1px solid transparent;
       transition:background-color .18s ease, transform .12s ease;
       white-space:nowrap;
-      min-height:42px;
+      min-height:40px;
     }
 
     .btn:hover,
@@ -554,7 +554,7 @@
     .empty-copy{
       margin:0 0 10px;
       font-size:12.5px;
-      line-height:1.38;
+      line-height:1.36;
       color:var(--ink-muted);
       max-width:42ch;
     }
@@ -595,7 +595,7 @@
 
     .empty-step-text{
       font-size:12px;
-      line-height:1.32;
+      line-height:1.30;
       color:var(--ink-muted);
     }
 
@@ -641,7 +641,7 @@
   </style>
 </head>
 <body>
-  <main class="tool-shell" data-tool-uid="sl-rentlookup-embed-20260310-v1">
+  <main class="tool-shell" data-tool-uid="sl-rentlookup-embed-20260310-v2">
     <div class="tool-layout">
       <section class="tool-panel">
         <section class="card lookup-card" aria-label="Rental lookup form">
